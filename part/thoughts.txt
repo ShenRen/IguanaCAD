@@ -1,0 +1,59 @@
+2 types of sketches: free and bound. We start with a collection of free sketches (which are sketched on base planes). 
+
+Everything is once again represented as a tree: the nodes this time include:
+- sketches, as leaves
+- generative operations: extrude, revolve, (loft?)
+	- must be applied directly on sketches
+- CSG operations (intersect, difference (union is implied))
+	- must be applied directly on generative operation nodes or other CSG nodes.
+
+We have a list of parameters, which consists of 
+1) Any parameters inherited from the sketches
+2) Any new parameters added. These can be used for things like extrusion length, revolve angle, reference plane offsets or angles, patterns, etc.
+
+In order to generate the geometry, all of the sketches first have to be evaluated. Since sketches could be passed other sketches' labels as values for their parameters, we need to topologically sort the sketches to figure out the order in which to evaluate the sketches. There can be no cycles. We also need to add a dependency between a bound sketch and the free sketch that produced the planar face upon which it is drawn. 
+
+We should associate with each node a function, that gives the appropriate CSG function for that subtree. 
+
+This module would be fairly straightforward, except we actually have to be able to render this thing, which means we need to actually determine what the geometry is in more definite terms (not like, you start with this sketch and then extrude and then intersect with this, but more like, there is this cylindrical face and that circle, etc.). This will be called the geometry set, or the realification of the part tree. To convert to this representation is to realify. 
+
+To realify, we must be able to:
+- get the shapes that correspond to extrusions and revolutions of any sketch element that we can make. These are called the Basic Shapes.
+- determine the intersection curves between any of the basic shapes.
+
+We must generate:
+1) The appropriate surfaces
+2) The intersection lines
+3) Ideally, the intersection points of the intersection lines.
+
+We should have a separate list for the surfaces and the lines. The lines should have pointers to the two surfaces that created them. These will always be in the (1) list. 
+
+CSG operations are straightforward: include all of the surfaces from either child, BUT: there are almost certainly not going to be the entire surface, and in some cases may be null. It is important to cull these null surfaces if possible. But how to figure it out?
+
+X n Y = the union of the pairwise intersections of X's and Y's components. 
+
+Union: If X is completely contained in the Y, delete X.
+Intersection: If X is completely disjunct from Y, the entire intersection is null, otherwise both surfaces are still present.
+Difference (X-Y): If a surface of Y is disjunct from X, delete it. If a surface of X is contained inside Y, delete it.
+
+It is therefore required to determine, for basic shapes X and Y:
+1) if X is contained in Y, and 
+2) if X is disjunct from Y. 
+
+To test for (1) || (2), we can test to see if X n Y == null. However, this doesn't give us any information about which of (1) or (2) it was. So, we need a test for each. Quick rejections of (2) can be done with bounding boxes. Otherwise:
+
+- sphere-sphere: this is easy, just look at the radii.
+- cylinder-sphere: look at things in the plane defined by the cylinder's axis and the center of the sphere. If the center is on the axis, then that can be special-cased pretty easily.
+- cylinder-cylinder: ugh. 
+	- containment: get intersection of Y.axis with X, which is a line segment. Now, if Y extends outside of this segment, it is automatically not contained. Look at each endpoint of Y, and see if the suface of X is farther away than Y.r. If so, contained, else not. 
+
+Anyway, assuming we can do all of this, it still might not be very good, because the surfaces can be reduced to very small parts of their wholes, and then further operations applied. Some bounding box tests might help, since bound(A n B) <= bound(A) n bound(B). 
+
+Actually, we don't need this distinction directly. We can just test for intersection, then test any point for containment. If that point is inside, the whole object is, and if it's outside, so is the whole object. Alternatively, if it's particularly difficult to test an object pair for intersection, the intersection test could be implemented as (!is_contained() and !isDisjunct()), if those are easier to deal with. 
+
+Once we've realified, all of this can be passed on to the rendering engine. For selection, we could store a buffer of which surface was hit for each pixel (not hard if we're doing the tracing anyway), and so we can highlight things. 
+	- one might argue that we don't actually need to keep track of any non-planar, non-cylindrical surfaces, and the surfaces can be given numbers based on their location in the CSG tree. 
+
+There seems to be some fuzziness in my head about what the basic shape for extruded polygons should be. Can we get away with using a union of bounded planes, or do we need some more complicated primitive that itself represents the idea of a bounded volume that is a polygonal prism? Oh wait - I know. We need to be using half-spaces. That makes a lot of sense. A half-space is composed of a half-space volume and a plane, so the intersections will produce a volume and a surface. Das ist gut. Aber, ich denke dass, es nicht so gut es. Concave polygons don't work: they have parts clipped off. So, we need to treat it as a union of the intersections of half-spaces for each convex piece. Now, how to split things into convex pieces? 
+
+If we want to treat bounded cylinders in a pure manner, we can call them the intersection of a cylinder (infinite) and two half-spaces. 

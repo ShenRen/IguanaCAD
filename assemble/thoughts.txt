@@ -1,0 +1,41 @@
+assemblies:
+
+I think we should actually make the idea of subassemblies be done not as assemblies within assemblies but rather as parts within parts. It fits the capabilities of a part better than that of an assembly. NO! This is not the case! Subassemblies are put together WITH MATES, and their entirety can be copied around. We do need to allow subassemblies, however, internally they will get converted into part-like objects when they're put in a bigger assembly. 
+
+What will assemblies do, exactly? 
+
+They will take a list of parts, and a set of mates, and solve the constraint system. Every part that is included must at this point be given actual numerical values for all of its parameters. No operations like patterns or mirrors etc are being done at this point - that should all be done inside the part. 
+
+It works on the realifications of parts, and renders the whole thing as a union of all of the parts (or subassemblies). Note that the coordinates you input into the CSG functions are going to have to be transformed into local space first. 
+
+Mate types:
+- Parallel (between planar faces or lines)
+- Concentric (between cylindrical faces, though I suppose it could be done on all surfaces of revolution though I don't know if that makes sense); maybe better to call Coaxial
+- Distance (between planar faces)
+- Manual absolute position
+
+How to solve? This gets HARD.
+We again can have a fixed object. We only need to look at the 'potentiall mateable set' - the set of planar faces, cylindrical faces, and line segments (and points if we have them). 
+
+All of the transformations we do here can be thought of as just reorienting the frame and repositioning the origin of the parts. Hence, once a transformation matrix is obtained it should be relatively straightforward to use it to transform all of the points (in the curves) and the inputs to the CSG functions. 
+
+Each part has its own set of basis vectors and origin, and every point/object in that part is represented in terms of those basis vector and that origin. When the part is embedded in an assembly, the part's frame and origin don't have to coincide with the global axes or origin. To transform a point X in a part with basis vectors e0, e1, and e2 into global space:
+
+global(X) = part.origin + (X . e0, X . e1, X . e2)
+
+All mates are really relations between the parts' frames and origins, but there's a layer of offset to go through (since we're not directly mating those frames, but rather planar faces etc.) 
+
+If F (a matrix) is our base frame, and P is some plane in our part's frame, then we have XF = P, where X is some transformation matrix. Also, if we have some frame A and we want to turn it into the target frame T, then we want to find the transformation R such that RF = T, or solving for R, R = TF^-1. This same transformation, I think, can be applied to the plane's frame P. (P' = RP). 
+
+----
+Interacting with the constrained model:
+
+- SolidWorks has really nice click-and-drag behavior on the constrained model. How to translate mouse motions into movement that satisfies the mates?
+
+- With our restricted mate set, we can probably determine exactly what are the allowable frames and origins. 
+
+|| constrains only the frame. It makes the normals line up, so if one is fixed, then we just have to keep the other's normal matching.
+
+|| with distance will constrain the frame as above, but also constrain the origin to lie in some plane. 
+
+

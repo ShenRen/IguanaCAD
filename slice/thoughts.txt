@@ -1,0 +1,5 @@
+Slicing:
+
+Phase 1: Determine intersections
+Phase 2: Calculate path
+Phase 3: Generate G-Code

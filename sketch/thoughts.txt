@@ -1,0 +1,74 @@
+2 kinds of variable:
+- parameter: must be given a value to instantiate the sketch; distances and angles inside the sketch can be expressions in terms of the parameters. They don't get solved for; whenever the sketch is built they have values, and so the constraints' values become constants. 
+- label: a distance or angle that gets its own name, to be used outside of this sketch. It is computed after the sketch is solved (so its value will depend on the parameters). It can be used in other sketches, though these other sketches will require that this one is solved first. Hence we'll build a dependency graph and do a topological sort; if cycles exist we can't do it. They can also be used in things like extrudes.
+
+Together, these should provide almost all of the functionality one would ever require. 
+
+Parameters get copied into higher level objects (so sketch parameters also become part parameters). They must have default values. 
+Assemblies inherit part parameters; can be referred to as 'part_name.param_name'. The 'part' nodes will have fields for the values of their parameters. Labels also get propogated in the same way.
+
+Solving the constraint system
+~~~~~~~ ~~~ ~~~~~~~~~~ ~~~~~~
+
+Approaches:
+1) Treat it as a nonlinear system of equations.
+2) Build up by successively merging points into a fixed set, satisfying all constraints they have with that fixed set.
+3) Bottum up: build up sets from the points that satisfy all of the constraints with other members of their set; then merge them successively until the whole thing is sovled.
+4) Top down: split the model into two pieces, solve each and merge results. Do this recursively. 
+
+(1) Is numerical and difficult; things I've seen about solving large systems of nonlinear equations indicate that it can be very slow to get even approximate answers. Also, there is little control on _which_ answer you get, so things could be pretty janky. However, it is elegant in a certain sense.
+
+(2) Has been demonstrated to work fairly well on fully constrained models; some modifications might make it work decently on underconstrained models as well. It is very practical, and its use of the geometrical interpretation of constraints makes it fairly robust numerically. Backtracking could be used (in cases of finitely many solutions) to determine the closest solution. Or the heuristic I used previously could be used.
+
+(3) and (4) are interesting, but both suffer from the same problem: it is monstrously unclear how to merge the two bits while keeping the constraints held within each set AND introducing all of the inter-set constraints. It seems like most of the subgroups would be massively underdefined, which could be really troublesome. However, I have not given too much thought to these approaches, so they shouldn't be eliminated yet. Also, their behavior could be very strongly dependent on how the merges (3) or splits (4) are chosen, and establishing good heuristics sounds challenging. 
+
+
+If (2): it should probably be refined somewhat from what I did previously.
+
+- There may be no fixed points in the sketch. In this case, select one and fix it. Actually, one from each connected component of the constraint graph should be fixed.
+- The main problem we used to run into was underdefinition. We repeatedly cycle through the nodes, attempting to add each one to the fixed set. Eventually, we'll either have added all the nodes, have reported overdefinition (which may only be due to a previous choice from among a finite set of potential solutions, in which case we should probably backtrack, or it may be a genuine overdefinition), or we are left with at least one node that STILL has infinitely many possibilities. 
+	- if there's exactly one node, then it _can't_ be tied to anything else, so we can feel free to pick any solution that works (note that it must be tied to the fixed region by _something_, otherwise it would be in its own component). We would probably choose the one that minimizes the distance the point moves, in order to avoid jankiness.
+	- more generally, any points that are connected to the fixed region but not to anything else, they may be added as described above. 
+	- the hard part occurs when the remaining things have interrelations. These interrelations, combined with their constraints to the fixed set, may be sufficient to nail down solutions for all or some of them, but they must be treated simultaneously. In some cases, a different order of adding the points might eliminate the problem; however, it may not. 
+		- consider the following: we have two fixed points, X and Y. Point A is distance 5 from X, and point B is distance 7 from Y. Furthermore, X is distance 4 from Y. Considered individually, both A and B have infinitely many solns when added to the fixed group. However, there are finitely many solutions to the system as a whole. Or are there? Actually, it could be either none, one, or infinite. Hmm. 
+	- also, there could easily be multiple separate sets of interrelated things left - we would definitely want to separate them. 
+	- is this the point at which we would want to invoke some sort of numerical solver? We do really want information on the number of solutions, though. For simple cases we might be able to determine enough about the geometry to figure out how many solutions there are (eg in this example, if the X-Y distance was greater than 16, there would be no solution possible, at exactly 16 there's one solution, and less than 16 there's infinitely many). 
+	- WOAH... if you Minkowski the circle for A-X with the one for X-Y, then intersect that with the one for B-Y, the resulting _curve_ is the set of possible positions for B. This I think stems from the place that guarantees that things like those intersection test dualities. This could potentially let us determine some of the simpler cases, especially if they have no solutions. 
+
+So, the enhancements are: 
+1) Split into connected components.
+2) Backtrack on overdefinition
+	- although, this could make sketches that actually are overdefined really slow to solve, depending.
+3) Solve some limited cases of underdefinition. For others, we can try leaving something where it is, then trying to solve the rest; we can do this once for each point; if it works, great, if not, oh well. 
+
+Is there some heuristic we can use to improve the order in which we add points to the fixed set? For that matter, what are the potential effects of changing the order?
+
+----
+If we have features like patterns, how does the created geometry interact with the constraints? I'm tempted to forbid all constraints to geometry created like that, but at the same time, there could be really useful things that require it. I guess all of the created geometry can be set as fixed. I think that would work pretty well. We have to be a little careful, also: for instance, if I have a linear pattern of 6 circles, and constrain something to be 10 units away from the last circle, then I change the number to be 8 circles, does the constraint apply to the 6th or to the 8th circle? Even more troublesome is if I make there be 4 circles - does the constraint disappear, or does it go the 4th circle? I am tempted to say it goes to the last circle, not the 6th. But now what about where we go to the next to the last circle? But clearly, if we're on the 2nd circle, we should stay there if the list gets longer. Cutoff at n/2? Or specify when creating the constraint?
+
+Nodes:
+- primitives
+- linear pattern
+- revolved pattern
+- mirror
+- intersection, union, difference
+
+----
+Constraint types:
+- parallel (4), perpendicular(4)
+	- horizontal (2), vertical (2), for convenience and simplicity (although they could be turned into parallels or perps with autogenerated guide geometry)
+- distance (2)
+- midpoint (3) (could be done as a combination of on_line and a distance constraint, although maybe not, since the actual distance isn't constant)
+- tangent?
+- on line (3)
+- angle (2 segments, or an arc (which when it boils down to it, is defined by two segments sharing an endpoint))
+- coincident (perhaps call it concentric).
+
+
+----
+guide geometry:
+- origin, axes
+- any centerlines 
+- any boundaries of the planar face we're sketching on (only for bound sketches)
+
+- treated as fixed, and does not get treated as actual sketch geometry when operations are applied to the sketch.
