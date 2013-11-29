@@ -13,6 +13,10 @@ public class Float2 {
 		y = 0;
 	}
 
+	public boolean equals (Float2 other) {
+		return dist(other) < 1e-8;
+	}
+
 	public Float2 add (Float2 other) {
 		return new Float2 (x + other.x, y + other.y);
 	}
@@ -33,6 +37,10 @@ public class Float2 {
 		return x*other.x + y*other.y;
 	}
 
+	public double angle (Float2 other) {
+		return Math.acos (normalize().dot(other.normalize()));
+	}
+
 	public double mag () {
 		return Math.sqrt (x*x + y*y);
 	}
@@ -43,6 +51,20 @@ public class Float2 {
 
 	public Float2 normalize () {
 		return mul(1/mag());
+	}
+
+	public Float2 makeLength (double len) {
+		return mul(len/mag());
+	}
+
+	public Float2 perp () {
+		return new Float2 (y, -x);
+	}
+
+	public Float2 rotate (double theta) {
+		double cos = Math.cos(theta);
+		double sin = Math.sin(theta);
+		return new Float2 (cos*x - sin*y, sin*x + cos*y);
 	}
 
 	public double dist (Float2 a){

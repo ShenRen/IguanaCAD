@@ -12,4 +12,6 @@ public abstract class Constraint {
 		}
 	}
 
+	public abstract Shape2 getViableSet (Point p);	// get the shape that represents the set of potential locations for point p, when all of the other points are fixed at their current locations.
+
 }

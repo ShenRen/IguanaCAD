@@ -5,13 +5,14 @@ public class Point extends Primitive {
 
 	public Float2 pos;
 	public ArrayList<Constraint> constraints;
-	public boolean fixed;
+	public boolean fixed, locked;
 
 	public Point (Float2 p){
 		super ();
 		pos = p;
 		constraints = new ArrayList<Constraint>();
 		fixed = false;
+		locked = false;
 		points.add (this);
 	}
 
@@ -20,6 +21,7 @@ public class Point extends Primitive {
 		pos = p;
 		constraints = new ArrayList<Constraint> ();
 		fixed = false;
+		locked = false;
 		points.add (this);
 	}
 
