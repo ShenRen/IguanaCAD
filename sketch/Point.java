@@ -8,9 +8,19 @@ public class Point extends Primitive {
 	public boolean fixed;
 
 	public Point (Float2 p){
+		super ();
 		pos = p;
 		constraints = new ArrayList<Constraint>();
 		fixed = false;
+		points.add (this);
+	}
+
+	public Point (Float2 p, int id) {
+		super(id);
+		pos = p;
+		constraints = new ArrayList<Constraint> ();
+		fixed = false;
+		points.add (this);
 	}
 
 

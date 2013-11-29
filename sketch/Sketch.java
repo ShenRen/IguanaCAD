@@ -1,13 +1,19 @@
 package sketch;
 
-public class Sketch {
+import common.*;
+public class Sketch extends ParameterizedObject {
 
 	public String name;
 	public SNode root;
+	public ArrayList<Measurement> meas;
 	
 	public Sketch (String name) {
+		super();
 		this.name = name;
-		// do something
+		meas = new ArrayList<Measurement>();
+		root = null;
 	}
+
+
 
 }
