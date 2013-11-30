@@ -1,4 +1,3 @@
-
 package common;
 
 public class Box {
@@ -9,5 +8,5 @@ public class Box {
 		center = c;
 		dims = d;
 	}
-
+}
 

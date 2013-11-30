@@ -1,6 +1,7 @@
 package sketch.geom;
+import common.*;
 
-public Circle extends Shape2{
+public class Circle extends Shape2{
 
 	public double r;
 	public Float2 c;
@@ -53,13 +54,14 @@ public Circle extends Shape2{
 						Float2 spur = dir.perp().makeLength(a);
 						return new Union (new Point(cp.add(spur)), new Point(cp.sub(spur)));
 					} else {	// kissing circles (inside)
-						return c.add(oc.c.sub(c)).makeLength(r);
+						return new Point(c.add(oc.c.sub(c)).makeLength(r));
 					}
 				} else {	// kissing circles (from the outside)
-					return c.add(oc.c.sub(c)).makeLength(r);
+					return new Point(c.add(oc.c.sub(c)).makeLength(r));
 				}
 			}
 		}
+		return null;
 	}
 
 

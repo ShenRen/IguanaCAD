@@ -1,5 +1,6 @@
 package sketch;
 import java.util.ArrayList;
+import common.*;
 public abstract class Primitive {
 
 	public int id;	// Globally, every piece of geometry gets assigned an ID, so that geometry that gets updated but is really just the same piece of thing gets the same ID (like if a dimension changes). 

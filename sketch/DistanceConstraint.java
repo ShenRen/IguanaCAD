@@ -1,4 +1,5 @@
 package sketch;
+import common.*;
 
 public class DistanceConstraint extends Constraint { 
 

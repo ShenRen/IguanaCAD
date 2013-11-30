@@ -1,4 +1,5 @@
 package sketch.geom;
+import common.*;
 
 public class Line extends Shape2{
 
@@ -29,7 +30,7 @@ public class Line extends Shape2{
 				if (dir.equals(line.dir)) {	// they coincide
 					return this;
 				} else {
-					return pt;
+					return new Point(pt);
 				}
 			}
 			if (Math.abs(Math.abs(dir.dot(line.dir)) - 1) > 1e-8) {	// non-parallel
@@ -37,7 +38,7 @@ public class Line extends Shape2{
 				double d = line.pt.dist(pt);
 				double theta = dir.angle(line.dir);
 				double phi = dir.angle(line.pt.sub(pt).normalize());
-				double x = d * Math.sin(pih) / Math.sin(theta);
+				double x = d * Math.sin(phi) / Math.sin(theta);
 				Float2 D = pt.sub(line.pt).normalize();
 				if (line.dir.dot (D) < 0) {
 					x = -x;
@@ -46,7 +47,7 @@ public class Line extends Shape2{
 			} else {	// lines are parallel.
 				if ((Math.abs(line.pt.sub(pt).normalize().dot(dir)) - 1) < 1e-8) {
 					// lines coincide
-					res.add(this);
+					return this;
 				} else {
 					return null;	// lines are disjoint
 				}
@@ -55,17 +56,18 @@ public class Line extends Shape2{
 			Circle circ = (Circle) other;
 			Line perp = new Line (circ.c, dir.perp());
 			Point p = (Point) this.intersection (perp);
-			double d = p.dist(circ.c);
+			double d = p.pos.dist(circ.c);
 			if (d + 1e-8 < circ.r) {	// line intersects circle in two points
 				double x = Math.sqrt (circ.r * circ.r - d*d);
-				double pdist = p.dist(pt);
-				return new Union (new Point(pt.add(dir.makeLength(pdist-x)), pt.add(dir.makeLength(pdist+x))));
+				double pdist = p.pos.dist(pt);
+				return new Union (new Point(pt.add(dir.makeLength(pdist-x))), new Point(pt.add(dir.makeLength(pdist+x))));
 			} else if (d - 1e-8 > circ.r) {	// line misses circle
 				return null;
 			} else {	// line is tangent to circle
 				return p;
 			}
 		}
+		return null;	// should not be here
 	}
 	
 }

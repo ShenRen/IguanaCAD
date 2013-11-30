@@ -1,6 +1,7 @@
 package sketch;
 import sketch.geom.Union;
 import sketch.geom.Line;
+import common.*;
 public class AngleConstraint extends Constraint {
 
 	public Point a1, a2, b1, b2;

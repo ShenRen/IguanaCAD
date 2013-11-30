@@ -1,4 +1,6 @@
 package sketch.geom;
+import java.util.ArrayList;
+import common.*;
 
 public class Union extends Shape2 {
 
@@ -12,7 +14,7 @@ public class Union extends Shape2 {
 		this();
 		for (Shape2 s : sh) {
 			if (s instanceof Union) {	// flatten nested Unions (this only goes one level, though).
-				Shape2 su = (Union) s;
+				Union su = (Union) s;
 				for (Shape2 elem : su.shapes) {
 					shapes.add(elem);
 				}
@@ -25,7 +27,7 @@ public class Union extends Shape2 {
 	public void add (Shape2 s) {
 		if (s == null) return;
 		if (s instanceof Union) {
-			for (Shape2 elem : s.shapes) {
+			for (Shape2 elem : ((Union) s).shapes) {
 				shapes.add(elem);
 			}
 		} else {

@@ -1,4 +1,5 @@
 package sketch.geom;
+import common.*;
 
 public class Point extends Shape2{
 
@@ -47,5 +48,6 @@ public class Point extends Shape2{
 				}
 			}
 		}
+		return null;
 	}
 }

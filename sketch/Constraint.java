@@ -1,5 +1,6 @@
 package sketch;
 import java.util.ArrayList;
+import sketch.geom.Shape2;
 public abstract class Constraint {
 
 	public ArrayList<Point> points;

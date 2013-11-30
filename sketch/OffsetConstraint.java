@@ -1,4 +1,5 @@
 package sketch;
+import common.*;
 public class OffsetConstraint extends Constraint {
 
 	// a fixed, absolute offset from another point: b.pos.sub(a.pos).equals(offset) should be true when the constraint is satisfied.

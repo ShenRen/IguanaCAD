@@ -7,6 +7,16 @@ public class Expr {
 	public Expr left, right;
 	public Variable var;
 
+	public static final int EX_CONST = 0;
+	public static final int EX_VAR = 1;
+	public static final int EX_ADD = 2;
+	public static final int EX_SUB = 3;
+	public static final int EX_MUL = 4;
+	public static final int EX_DIV = 5;
+	public static final int EX_COS = 6;
+	public static final int EX_SIN = 7;
+	public static final int EX_TAN = 8;
+
 	public Expr (double val) {
 		type = EX_CONST;
 		this.val = val;
