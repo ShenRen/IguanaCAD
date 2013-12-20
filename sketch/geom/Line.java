@@ -18,13 +18,14 @@ public class Line extends Shape2{
 		return false;
 	}
 
+	public double getT (Float2 x) {
+		x = x.sub(pt);
+		return x.mag();	// since dir is normalized
+	}
+
 	public Shape2 intersection (Shape2 other){
 		if (other == null) return null;
-		if (other instanceof Point) {	// see Point.java
-			return other.intersection(this);
-		} else if (other instanceof Union) {
-			return other.intersection(this);
-		} else if (other instanceof Line) {
+		if (other instanceof Line) {
 			Line line = (Line) other;
 			if (pt.dist(line.pt) < 1e-8) {	// the lines start at the same place.
 				if (dir.equals(line.dir)) {	// they coincide
@@ -66,8 +67,9 @@ public class Line extends Shape2{
 			} else {	// line is tangent to circle
 				return p;
 			}
+		} else {
+			return other.intersection (this);
 		}
-		return null;	// should not be here
 	}
 	
 }

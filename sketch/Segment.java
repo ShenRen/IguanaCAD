@@ -13,4 +13,7 @@ public class Segment extends Primitive {
 		points.add (p2);
 	}
 
+	public sketch.geom.Shape2 getShape2 () {
+		return new sketch.geom.Line (points.get(0).pos, points.get(1).pos.sub(points.get(0).pos));
+	}
 }

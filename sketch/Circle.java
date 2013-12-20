@@ -1,5 +1,6 @@
 package sketch;
 import common.*;
+import sketch.geom.Shape2;
 public class Circle extends Primitive {
 
 	public Expr rad;
@@ -14,6 +15,10 @@ public class Circle extends Primitive {
 		super(id);
 		points.add (c);
 		rad = r;
+	}
+
+	public Shape2 getShape2 () {
+		return new sketch.geom.Circle (points.get(0).pos, rad.eval());
 	}
 }
 		

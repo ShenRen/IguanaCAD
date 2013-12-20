@@ -5,16 +5,18 @@ public class OffsetConstraint extends Constraint {
 	// a fixed, absolute offset from another point: b.pos.sub(a.pos).equals(offset) should be true when the constraint is satisfied.
 	
 	public Point a, b;
-	public Float2 offset;
+	public Expr xoff, yoff;
 
-	public OffsetConstraint (Point a, Point b, Float2 offset) {
+	public OffsetConstraint (Point a, Point b, Expr x, Expr y) {
 		super (a,b);
 		this.a = a;
 		this.b = b;
-		this.offset = offset;
+		xoff = x;
+		yoff = y;
 	}
 
 	public sketch.geom.Shape2 getViableSet (Point p) {
+		Float2 offset = new Float2(xoff.eval(), yoff.eval());
 		if (p == a) {
 			return new sketch.geom.Point (b.pos.sub(offset));
 		} else if (p == b) {

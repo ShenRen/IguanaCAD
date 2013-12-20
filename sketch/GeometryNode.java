@@ -1,10 +1,14 @@
 package sketch;
+import java.util.ArrayList;
 
 public class GeometryNode extends SNode {
 
-	public Primitive shape;
+	public ArrayList<Primitive> shapes;
 
-	public GeometryNode (Primitive s){
-		shape = s;
+	public GeometryNode (Primitive... s){
+		shapes  = new ArrayList<Primitive>();
+		for (Primitive p : s) {
+			shapes.add(p);
+		}
 	}
 }

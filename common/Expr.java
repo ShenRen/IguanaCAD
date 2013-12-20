@@ -66,4 +66,30 @@ public class Expr {
 				return 0;
 		}
 	}
+
+	public boolean isCircular (ArrayList<Variable> blacklist) {	// check for circular dependencies
+		if (type == EX_VAR) {
+			if (blacklist.contains(var)) return true;
+			blacklist.add (var);
+			if (var instanceof Parameter) {
+				Parameter p = (Parameter) var;
+				if (p.val == null) {
+					return isCircular (p.def);
+				} else {
+					return isCircular (p.val);
+				}
+			}
+		} else {
+			boolean bad = false;
+			if (left != null) {
+				bad = bad || left.isCircular();
+			}
+			if (right != null) {
+				bad = bad || right.isCircular();
+			}
+			return bad;
+		}
+	}
+
+
 }

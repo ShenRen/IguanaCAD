@@ -47,7 +47,8 @@ public class Point extends Shape2{
 					return this;
 				}
 			}
+		} else {
+			return other.intersection (this);
 		}
-		return null;
 	}
 }

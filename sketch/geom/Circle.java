@@ -19,15 +19,14 @@ public class Circle extends Shape2{
 		return false;
 	}
 
+	public double getTheta (Float2 pt) {
+		Float2 x = pt.sub(c).mul(1.0/r);
+		return Math.atan2 (x.x, x.y);
+	}
+
 	public Shape2 intersection (Shape2 other) {
 		if (other == null) return null;
-		if (other instanceof Point) {
-			return other.intersection (this);	// see Point.java
-		} else if (other instanceof Line) {
-			return other.intersection (this);	// see Line.java
-		} else if (other instanceof Union) {		// see Union.java
-			return other.intersection (this);
-		} else if (other instanceof Circle) {	
+		if (other instanceof Circle) {	
 			Circle oc = (Circle) other;
 			double cdist = oc.c.dist(c);
 			if (cdist < 1e-8) {
@@ -60,8 +59,9 @@ public class Circle extends Shape2{
 					return new Point(c.add(oc.c.sub(c)).makeLength(r));
 				}
 			}
+		} else {
+			return other.intersection (this);
 		}
-		return null;
 	}
 
 

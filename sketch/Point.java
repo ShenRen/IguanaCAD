@@ -1,6 +1,7 @@
 package sketch;
 import common.*;
 import java.util.ArrayList;
+import sketch.geom.Shape2;
 public class Point extends Primitive {
 
 	public Float2 pos;
@@ -25,5 +26,7 @@ public class Point extends Primitive {
 		points.add (this);
 	}
 
-
+	public sketch.geom.Shape2 getShape2 () {
+		return new sketch.geom.Point (pos);
+	}
 }
