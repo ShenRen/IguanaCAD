@@ -1,13 +1,11 @@
 package sketch;
-import sketch.geom.Union;
-import sketch.geom.Line;
 import common.*;
 public class AngleConstraint extends Constraint {
 
-	public Point a1, a2, b1, b2;
+	public CPoint a1, a2, b1, b2;
 	public Expr theta;
 
-	public AngleConstraint (Point a1, Point a2, Point b1, Point b2, Expr theta){
+	public AngleConstraint (CPoint a1, CPoint a2, CPoint b1, CPoint b2, Expr theta){
 		super (a1, a2, b1, b2);
 		this.a1 = a1;
 		this.a2 = a2;
@@ -16,7 +14,7 @@ public class AngleConstraint extends Constraint {
 		this.theta = theta;
 	}
 
-	public sketch.geom.Shape2 getViableSet (Point p) {
+	public Shape2 getViableSet (CPoint p) {
 		Float2 dir = new Float2 ();
 		if (p == a1 || p == a2) {
 			dir = b2.pos.sub(b1.pos);

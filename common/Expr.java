@@ -1,4 +1,5 @@
 package common;
+import java.util.ArrayList;
 
 public class Expr {
 
@@ -67,6 +68,7 @@ public class Expr {
 		}
 	}
 
+	/*
 	public boolean isCircular (ArrayList<Variable> blacklist) {	// check for circular dependencies
 		if (type == EX_VAR) {
 			if (blacklist.contains(var)) return true;
@@ -90,6 +92,6 @@ public class Expr {
 			return bad;
 		}
 	}
-
+*/
 
 }

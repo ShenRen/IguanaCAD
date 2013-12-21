@@ -1,32 +1,55 @@
 package sketch;
 import common.*;
-import java.util.ArrayList;
-import sketch.geom.Shape2;
-public class Point extends Primitive {
+
+public class Point extends Shape2{
 
 	public Float2 pos;
-	public ArrayList<Constraint> constraints;
-	public boolean fixed, locked;
 
 	public Point (Float2 p){
-		super ();
 		pos = p;
-		constraints = new ArrayList<Constraint>();
-		fixed = false;
-		locked = false;
-		points.add (this);
 	}
 
-	public Point (Float2 p, int id) {
-		super(id);
-		pos = p;
-		constraints = new ArrayList<Constraint> ();
-		fixed = false;
-		locked = false;
-		points.add (this);
+	public boolean equals (Object other) {
+		if (other instanceof Point) {
+			Point op = (Point) other;
+			return op.pos.dist(pos) < 1e-8;
+		}
+		return false;
 	}
 
-	public sketch.geom.Shape2 getShape2 () {
-		return new sketch.geom.Point (pos);
+	public Shape2 intersection (Shape2 other) {
+		if (other == null) return null;
+		if (other instanceof Point) {
+			Point op = (Point) other;
+			if (op.pos.dist(pos) < 1e-8) {
+				return this;
+			} else {
+				return null;
+			}
+		} else if (other instanceof Line) {
+			Line ol = (Line) other;
+			if (pos.sub(ol.pt).normalize().sub(ol.dir).mag() < 1e-8) {
+				return this;
+			} else {
+				return null;
+			}
+		} else if (other instanceof Circle) {
+			Circle c = (Circle) other;
+			if (Math.abs(c.c.dist(pos) - c.r) < 1e-8) {
+				return this;
+			} else {
+				return null;
+			}
+		} else if (other instanceof Union) {
+			Union u = (Union) other;
+			for (Shape2 s : u.shapes) {
+				if (intersection(s) != null) {
+					return this;
+				}
+			}
+		} else {
+			return other.intersection (this);
+		}
+		return null;	// shouldn't be here
 	}
 }

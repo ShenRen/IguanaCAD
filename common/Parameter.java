@@ -4,8 +4,6 @@ public class Parameter extends Variable {
 
 	public ParameterizedObject parent;
 	public Expr def, val;
-	public double def;
-	public double val;
 	
 	public Parameter (String name, Expr def, ParameterizedObject parent) {
 		this.name = name;

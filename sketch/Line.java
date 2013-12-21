@@ -1,4 +1,4 @@
-package sketch.geom;
+package sketch;
 import common.*;
 
 public class Line extends Shape2{

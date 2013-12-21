@@ -1,7 +1,6 @@
 package sketch;
 import java.util.ArrayList;
 import common.*;
-import sketch.geom.*;
 public class Sketch extends ParameterizedObject {
 
 	public String name;
@@ -36,13 +35,13 @@ public class Sketch extends ParameterizedObject {
 		return false;
 	}
 
-	public int findPrimitiveWithPoint (Loop l, Point p) {	// pass the current primitive in, so we don't include it in the list.
+	public int findPrimitiveWithPoint (Loop l, CPoint p) {	// pass the current primitive in, so we don't include it in the list.
 		/* If there's exactly 1 thing not in the loop, it will return its index. */
 		int ct = 0;
 		int idx = -1;
 		for (int i=0; i < geom.size(); i++) {
 			Primitive x = geom.get(i);
-			if (x.points.contains(p)) {
+			if (x.shape.points.contains(p)) {
 				ct ++;
 				if (!l.contains(x)) {
 					idx = i;
@@ -57,11 +56,7 @@ public class Sketch extends ParameterizedObject {
 	public void detectLoops () {
 		/* Clear the inloop flags */
 		for (Primitive p : geom) {
-			if (p instanceof Point) {
-				p.inloop = true;	// this guarantees that the Points will not be added to the loops
-			} else {
-				p.inloop = false;
-			}
+			p.inloop = false;
 		}
 
 		/* Do the actual detection work */
@@ -74,17 +69,22 @@ public class Sketch extends ParameterizedObject {
 			} else {
 				Loop l = new Loop ();
 				l.add (geom.get(w));
+				if (geom.get(w).shape instanceof Circle) {
+					w++;
+					loops.add (l);
+					continue;
+				}
 				while (true) {
-					Point curr_end = l.segs.get(l.segs.size()-1).points.get(1);
+					CPoint curr_end = l.segs.get(l.segs.size()-1).shape.points.get(1);
 					int idx = findPrimitiveWithPoint (l, curr_end);
 					if (idx < 0) {
 						System.err.println ("Nonmanifold loopy thing. Count value is " + (-idx));
 						System.exit(1);
 					} else {
 						if (!l.contains(geom.get(idx))) {
-							if (geom.get(idx).points(1) == curr_end) {	// then we need to flip things around
-								geom.get(idx).points.set (1, geom.get(idx).points.get(0));
-								geom.get(idx).points.set (0, curr_end);
+							if (geom.get(idx).shape.points.get(1) == curr_end) {	// then we need to flip things around
+								geom.get(idx).shape.points.set (1, geom.get(idx).shape.points.get(0));
+								geom.get(idx).shape.points.set (0, curr_end);
 							}
 							l.add (geom.get(idx));
 							geom.get(idx).inloop = true;

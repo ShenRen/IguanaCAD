@@ -1,4 +1,4 @@
-package sketch.geom;
+package sketch;
 import java.util.ArrayList;
 import common.*;
 

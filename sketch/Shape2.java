@@ -1,4 +1,4 @@
-package sketch.geom;
+package sketch;
 
 public abstract class Shape2 {
 

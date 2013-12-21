@@ -1,4 +1,6 @@
 package sketch;
+import java.util.ArrayList;
+import common.*;
 
 public class Loop {	/* Represents a closed loop of geometry */
 
@@ -43,8 +45,7 @@ public class Loop {	/* Represents a closed loop of geometry */
 	public void orient () {
 	}
 
-
-
-
-
+	public Loop getCovexHull () {
+		return null;
+	}
 }
