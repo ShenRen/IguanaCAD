@@ -69,6 +69,7 @@ Constraint types:
 guide geometry:
 - origin, axes
 - any centerlines 
-- any boundaries of the planar face we're sketching on (only for bound sketches)
+- any boundaries or features on (like the circles from holes) of the planar face we're sketching on (only for bound sketches)
+- user can make other guide geometry (circles, lines, whatever)
 
 - treated as fixed, and does not get treated as actual sketch geometry when operations are applied to the sketch.

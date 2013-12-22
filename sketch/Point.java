@@ -17,6 +17,10 @@ public class Point extends Shape2{
 		return false;
 	}
 
+	public String toString () {
+		return "POINT " + pos;
+	}
+
 	public Shape2 intersection (Shape2 other) {
 		if (other == null) return null;
 		if (other instanceof Point) {

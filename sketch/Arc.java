@@ -28,6 +28,10 @@ public class Arc extends UpdatingShape {
 		update();
 	}
 
+	public String toString () {
+		return "ARC (" + circ + ") p1 = " + p1 + " p2 = " + p2 + (flip?" [flip] ":"");
+	}
+
 	public void flip () {
 		flip = !flip;
 		calcNormal ();

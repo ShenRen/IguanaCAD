@@ -18,6 +18,10 @@ public class Line extends Shape2{
 		return false;
 	}
 
+	public String toString () {
+		return "LINE " + pt + "  dir = " + dir;
+	}
+
 	public double getT (Float2 x) {
 		x = x.sub(pt);
 		return x.mag();	// since dir is normalized

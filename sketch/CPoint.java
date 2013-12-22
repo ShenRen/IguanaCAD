@@ -13,4 +13,8 @@ public class CPoint {
 		fixed = false;
 		locked = false;
 	}
+
+	public String toString () {
+		return "CPOINT " + pos + (fixed ? "[fix] ":"") + (locked?" [lock] ":"");
+	}
 }

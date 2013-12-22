@@ -18,6 +18,10 @@ public class Segment extends UpdatingShape {
 		tmax = p2.sub(p1).mag();
 	}
 
+	public String toString () {
+		return "SEGMENT (" + line + ") tmax = " + tmax;
+	}
+
 	public void update () {
 		if (usepoints) {
 			Float2 dir = points.get(1).pos.sub(points.get(0).pos);

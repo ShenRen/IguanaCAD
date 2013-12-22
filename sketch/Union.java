@@ -24,6 +24,14 @@ public class Union extends Shape2 {
 		remove_duplicates ();
 	}
 
+	public String toString () {
+		StringBuffer res = new StringBuffer ();
+		for (Shape2 s : shapes) {
+			res.append (s + "\n");
+		}
+		return res.toString();
+	}
+
 	public void add (Shape2 s) {
 		if (s == null) return;
 		if (s instanceof Union) {

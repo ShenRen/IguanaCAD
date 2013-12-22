@@ -20,6 +20,10 @@ public class Circle extends UpdatingShape {
 		update();
 	}
 
+	public String toString () {
+		return "CIRCLE c = " + c + " r = " + r;
+	}
+
 	public void update () {
 		if (usepoints) {
 			c = points.get(0).pos;
